@@ -46,6 +46,7 @@ trapexit() {
   apt-get clean
   rm -rf $TEMPDIR
   rm -rf /root/.cache
+  rm -rf /etc/environment
 }
 
 # Check for previous install
