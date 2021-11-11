@@ -8,7 +8,7 @@ TEMPERR="$TEMPDIR/tmperr"
 LASTCMD=""
 WGETOPT="-t 1 -T 15 -q"
 DEVDEPS="git build-essential libffi-dev libssl-dev python3-dev"
-NPMURL="https://github.com/xxpandora/nginx-proxy-manager"
+NPMURL="https://github.com/xxpandora/proxy-manager"
 
 cd $TEMPDIR
 touch $TEMPLOG
@@ -41,7 +41,7 @@ trapexit() {
   fi
   
   # Cleanup
-  apt-get remove --purge -y build-essential python3-dev git -qq &>/dev/null
+  apt-get remove --purge -y $DEVDEPS -qq &>/dev/null
   apt-get autoremove -y -qq &>/dev/null
   apt-get clean
   rm -rf $TEMPDIR
@@ -57,7 +57,6 @@ if [ -f /lib/systemd/system/npm.service ]; then
   # Cleanup for new install
   log "Cleaning old files"
   rm -rf /app \
-  /data \
   /var/www/html \
   /etc/nginx \
   /var/log/nginx \
@@ -73,7 +72,6 @@ runcmd 'apt-get install -y --no-install-recommends $DEVDEPS gnupg openssl ca-cer
 
 # Install Python
 log "Installing python"
-runcmd apt -y install python-pip
 runcmd apt-get install -y -q --no-install-recommends python3 python3-distutils python3-venv
 python3 -m venv /opt/certbot/
 export PATH=/opt/certbot/bin:$PATH
@@ -99,15 +97,15 @@ runcmd wget -qO - https://deb.nodesource.com/setup_14.x | bash -
 runcmd apt-get install -y -q --no-install-recommends nodejs
 runcmd npm install --global yarn
 
-# Get latest version information for PegaCDN
-#log "Checking for latest NPM release"
-#runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
-#_latest_version=$(basename $(cat ./_latest_release | grep -wo "xxpandora/.*.tar.gz") .tar.gz | cut -d'v' -f2)
+# Get latest version information for PegaFlare
+log "Checking for latest PegaFlare release"
+runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
+_latest_version=$(basename $(cat ./_latest_release | grep -wo "xxpandora/.*.tar.gz") .tar.gz | cut -d'v' -f2)
 
-# Download PegaCDN Source Code
-log "Downloading PegaCDN Source Code"
-runcmd 'wget $WGETOPT -c $NPMURL/archive/refs/tags/v2.9.7_pegacdn.tar.gz -O - | tar -xz'
-cd ./nginx-proxy-manager-2.9.7_pegacdn
+# Download PegaFlare WAF source
+log "Downloading PegaFlare v$_latest_version"
+runcmd 'wget $WGETOPT -c $NPMURL/archive/v$_latest_version.tar.gz -O - | tar -xz'
+cd ./proxy-manager-$_latest_version
 
 log "Setting up enviroment"
 # Crate required symbolic links
@@ -117,9 +115,9 @@ ln -sf /opt/certbot/bin/certbot /usr/bin/certbot
 ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/sbin/nginx
 ln -sf /usr/local/openresty/nginx/ /etc/nginx
 
-# Update PegaCDN version in package.json files
-sed -i "s+0.0.0+2.9.7+g" backend/package.json
-sed -i "s+0.0.0+2.9.7+g" frontend/package.json
+# Update PegaFlare version in package.json files
+sed -i "s+0.0.0+$_latest_version+g" backend/package.json
+sed -i "s+0.0.0+$_latest_version+g" frontend/package.json
 
 # Fix nginx config files for use with openresty defaults
 sed -i 's+^daemon+#daemon+g' docker/rootfs/etc/nginx/nginx.conf
@@ -144,7 +142,6 @@ mkdir -p /tmp/nginx/body \
 /data/custom_ssl \
 /data/logs \
 /data/access \
-/data/letsencrypt-acme-challenge \
 /data/nginx/default_host \
 /data/nginx/default_www \
 /data/nginx/proxy_host \
@@ -159,12 +156,14 @@ mkdir -p /tmp/nginx/body \
 chmod -R 777 /var/cache/nginx
 chown root /tmp/nginx
 
+# Dynamically generate resolvers file, if resolver is IPv6, enclose in `[]`
+# thanks @tfmm
 echo resolver "$(awk 'BEGIN{ORS=" "} $1=="nameserver" {print ($2 ~ ":")? "["$2"]": $2}' /etc/resolv.conf);" > /etc/nginx/conf.d/include/resolvers.conf
 
 # Generate dummy self-signed certificate.
 if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
   log "Generating dummy SSL certificate"
-  runcmd 'openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaCDN /OU=Dummy Certificate/CN=pegacdn" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem'
+  runcmd 'openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem'
 fi
 
 # Copy app files
@@ -203,18 +202,18 @@ cd /app
 export NODE_ENV=development
 runcmd yarn install --network-timeout=30000
 
-# Create PegaCDN service
-log "Creating PegaCDN service"
-cat << 'EOF' > /lib/systemd/system/npm.service
+# Create PegaFlare service
+log "Creating PegaFlare service"
+cat << 'EOF' > /lib/systemd/system/pegaflare-waf.service
 [Unit]
-Description=PegaCDN Service
+Description=PegaFlare WAF
 After=network.target
 Wants=openresty.service
 
 [Service]
 Type=simple
 Environment=NODE_ENV=production
-ExecStartPre=-mkdir -p /tmp/nginx/body /data/letsencrypt-acme-challenge
+ExecStartPre=-/bin/mkdir -p /tmp/nginx/body /data/letsencrypt-acme-challenge
 ExecStart=/usr/bin/node index.js --abort_on_uncaught_exception --max_old_space_size=250
 WorkingDirectory=/app
 Restart=on-failure
@@ -223,17 +222,17 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
-systemctl enable npm
+systemctl enable pegaflare-waf
 
 # Start services
 log "Starting services"
 runcmd systemctl start openresty
-runcmd systemctl start npm
+runcmd systemctl start pegaflare-waf
 
-IP=$(ip a s dev ens192 | sed -n '/inet / s/\// /p' | awk '{print $2}')
+IP=$(hostname -I | cut -f1 -d ' ')
 log "Installation complete
 
-\e[0mPegaCDN should be reachable at the following URL.
+\e[0mPegaFlare WAF should be reachable at the following URL.
 
       http://${IP}:81
 "
