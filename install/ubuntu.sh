@@ -8,7 +8,7 @@ TEMPERR="$TEMPDIR/tmperr"
 LASTCMD=""
 WGETOPT="-t 1 -T 15 -q"
 DEVDEPS="git build-essential libffi-dev libssl-dev python3-dev"
-NPMURL="https://github.com/xxpandora/proxy-manager"
+NPMURL="https://github.com/xxpandora/nginx-proxy-manager"
 
 cd $TEMPDIR
 touch $TEMPLOG
@@ -105,7 +105,7 @@ _latest_version=$(basename $(cat ./_latest_release | grep -wo "xxpandora/.*.tar.
 # Download PegaFlare WAF source
 log "Downloading PegaFlare v$_latest_version"
 runcmd 'wget $WGETOPT -c $NPMURL/archive/v$_latest_version.tar.gz -O - | tar -xz'
-cd ./proxy-manager-$_latest_version
+cd ./nginx-proxy-manager-$_latest_version
 
 log "Setting up enviroment"
 # Crate required symbolic links
