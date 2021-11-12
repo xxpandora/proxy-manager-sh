@@ -148,7 +148,7 @@ mkdir -p /tmp/nginx/body \
 /data/nginx/proxy_host \
 /data/nginx/redirection_host \
 /data/nginx/stream \
-/data/nginx/dead_host \
+/data/nginx/abuse_host \
 /data/nginx/temp \
 /var/lib/nginx/cache/public \
 /var/lib/nginx/cache/private \
