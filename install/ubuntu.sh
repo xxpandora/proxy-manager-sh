@@ -67,6 +67,7 @@ fi
 
 # Install dependencies
 log "Installing dependencies"
+rm -rf /etc/environment
 runcmd apt-get update
 export DEBIAN_FRONTEND=noninteractive
 runcmd 'apt-get install -y --no-install-recommends $DEVDEPS gnupg openssl ca-certificates apache2-utils logrotate'
@@ -235,5 +236,7 @@ log "Installation complete
 
 \e[0mPegaFlare WAF should be reachable at the following URL.
 
-      http://${IP}:81
+      URL       : http://${IP}:81
+      USER      : admin@example.com
+      PASSWORD  : changeme
 "
