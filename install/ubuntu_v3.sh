@@ -2,6 +2,9 @@
 set -euo pipefail
 trap trapexit EXIT SIGTERM
 
+DISTRO_ID=$(cat /etc/*-release | grep -w ID | cut -d= -f2 | tr -d '"')
+DISTRO_CODENAME=$(cat /etc/*-release | grep -w VERSION_CODENAME | cut -d= -f2 | tr -d '"')
+
 TEMPDIR=$(mktemp -d)
 TEMPLOG="$TEMPDIR/tmplog"
 TEMPERR="$TEMPDIR/tmperr"
@@ -67,7 +70,6 @@ fi
 
 # Install dependencies
 log "Installing dependencies"
-rm -rf /etc/environment
 runcmd apt-get update
 export DEBIAN_FRONTEND=noninteractive
 runcmd 'apt-get install -y --no-install-recommends $DEVDEPS gnupg openssl ca-certificates apache2-utils logrotate'
@@ -88,24 +90,27 @@ runcmd pip install --no-cache-dir cffi certbot
 # Install openresty
 log "Installing openresty"
 wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
-_distro_release=$(lsb_release -sc)
-_distro_release=$(wget $WGETOPT "http://openresty.org/package/ubuntu/dists/" -O - | grep -o "$_distro_release" | head -n1 || true)
-echo "deb [trusted=yes] http://openresty.org/package/ubuntu ${_distro_release:-focal} main" | tee /etc/apt/sources.list.d/openresty.list
+_distro_release=$(wget $WGETOPT "http://openresty.org/package/$DISTRO_ID/dists/" -O - | grep -o "$DISTRO_CODENAME" | head -n1 || true)
+if [ $DISTRO_ID = "ubuntu" ]; then
+  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-focal} main" | tee /etc/apt/sources.list.d/openresty.list
+else
+  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-bullseye} openresty" | tee /etc/apt/sources.list.d/openresty.list
+fi
 runcmd apt-get update && apt-get install -y -q --no-install-recommends openresty
 
 # Install nodejs
 log "Installing nodejs"
-runcmd wget -qO - https://deb.nodesource.com/setup_14.x | bash -
+runcmd wget -qO - https://deb.nodesource.com/setup_16.x | bash -
 runcmd apt-get install -y -q --no-install-recommends nodejs
 runcmd npm install --global yarn
 
 # Get latest version information for PegaFlare
-log "Checking for latest PegaFlare release"
+log "Checking for latest NPM release"
 runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
 _latest_version=$(basename $(cat ./_latest_release | grep -wo "xxpandora/.*.tar.gz") .tar.gz | cut -d'v' -f2)
 
 # Download PegaFlare WAF source
-log "Downloading PegaFlare v$_latest_version"
+log "Downloading NPM v$_latest_version"
 runcmd 'wget $WGETOPT -c $NPMURL/archive/v$_latest_version.tar.gz -O - | tar -xz'
 cd ./nginx-proxy-manager-$_latest_version
 
@@ -149,7 +154,7 @@ mkdir -p /tmp/nginx/body \
 /data/nginx/proxy_host \
 /data/nginx/redirection_host \
 /data/nginx/stream \
-/data/nginx/abuse_host \
+/data/nginx/dead_host \
 /data/nginx/temp \
 /var/lib/nginx/cache/public \
 /var/lib/nginx/cache/private \
