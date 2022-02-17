@@ -65,7 +65,8 @@ if [ -f /lib/systemd/system/npm.service ]; then
   /etc/nginx \
   /var/log/nginx \
   /var/lib/nginx \
-  /var/cache/nginx &>/dev/null
+  /var/cache/nginx \
+  /usr/local/openresty \ &>/dev/null
 fi
 
 # Install dependencies
