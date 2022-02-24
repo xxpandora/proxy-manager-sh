@@ -16,7 +16,7 @@ fi
 INSTALL_SCRIPT=$DISTRO
 
 rm -rf $TMP
-wget -O "$TMP" "$URL/$INSTALL_SCRIPT.sh"
+wget -O "$TMP" "$URL/$INSTALL_SCRIPT_v3.sh"
 
 chmod +x "$TMP"
 
