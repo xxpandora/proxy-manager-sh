@@ -2,7 +2,7 @@
 TMP=/tmp/pegacdn_install.sh
 URL=https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/install
 
-INSTALL_SCRIPT=ubuntu_v3
+INSTALL_SCRIPT=ubuntu_v4
 
 rm -rf $TMP
 wget -O "$TMP" "$URL/$INSTALL_SCRIPT.sh"
