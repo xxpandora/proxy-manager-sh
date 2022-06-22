@@ -129,6 +129,7 @@ for NGINX_CONF in $NGINX_CONFS; do
 done
 
 # Copy runtime files
+log "Copy runtime files"
 mkdir -p /var/www/html /etc/nginx/logs
 cp -r docker/rootfs/var/www/html/* /var/www/html/
 cp -r docker/rootfs/etc/nginx/* /etc/nginx/
@@ -138,6 +139,7 @@ ln -sf /etc/nginx/nginx.conf /etc/nginx/conf/nginx.conf
 rm -f /etc/nginx/conf.d/dev.conf
 
 # Create required folders
+log "Create required folders"
 mkdir -p /tmp/nginx/body \
 /run/nginx \
 /data/nginx \
@@ -169,6 +171,7 @@ if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
 fi
 
 # Copy app files
+log "Copy app files"
 mkdir -p /app/global /app/frontend/images
 cp -r backend/* /app
 cp -r global/* /app/global
