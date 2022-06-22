@@ -90,6 +90,9 @@ rm -f /etc/nginx/conf.d/dev.conf
 
 # Create required folders
 log "Create required folders"
+if [ -f /tmp/pandora ]; then
+  mkdir /tmp/nginx 
+fi
 mkdir -p /data/nginx \
 /data/custom_ssl \
 /data/logs \
@@ -166,7 +169,6 @@ systemctl enable pegaflare-waf
 
 # Start services
 log "Starting services"
-runcmd systemctl reload openresty
 runcmd systemctl restart openresty
 runcmd systemctl start pegaflare-waf
 
