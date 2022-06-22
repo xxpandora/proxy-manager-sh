@@ -66,7 +66,7 @@ case $OPTION in
 
 	# Update
 		rm -rf $TMP
-		wget -O "$TMP" "$UPDATE_URL/$UPDATE_URL.sh"
+		wget -O "$TMP" "$UPDATE_URL/$UPDATE_SCRIPT.sh"
 
 		chmod +x "$TMP"
 
@@ -86,7 +86,7 @@ case $OPTION in
 
 	# Delete
 		rm -rf $TMP
-		wget -O "$TMP" "$DELETE_URL/$DELETE_URL.sh"
+		wget -O "$TMP" "$DELETE_URL/$DELETE_SCRIPT.sh"
 
 		chmod +x "$TMP"
 
