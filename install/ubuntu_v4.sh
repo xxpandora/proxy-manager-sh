@@ -49,11 +49,6 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   log "Stopping services"
   systemctl stop openresty
   systemctl stop pegaflare-waf
-
-  # Cleanup environment
-  log "Cleanup environment"
-  rm -rf /root/.cache
-  rm -rf /etc/environment
  
   # Cleanup for new install
   log "Cleaning old files"
@@ -67,6 +62,11 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   /etc/environment \
   /usr/local/openresty \ &>/dev/null
 fi
+ 
+# Cleanup environment
+log "Cleanup environment"
+rm -rf /root/.cache
+rm -rf /etc/environment
 
 # Install dependencies
 log "Installing dependencies"
