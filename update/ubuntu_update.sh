@@ -52,64 +52,11 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
  
   # Cleanup for new install
   log "Cleaning old files"
-  runcmd apt-get remove -y openresty
   rm -rf /app \
-  /var/www/html \
-  /var/log/nginx \
-  /var/lib/nginx \
-  /var/cache/nginx \
-  /etc/environment \
-  /etc/apt/sources.list.d/openresty.list \ &>/dev/null
+  /data/database.sqlite \
+  /lib/systemd/system/pegaflare-waf.service \ &>/dev/null
 fi
  
-# Cleanup environment
-log "Cleanup environment"
-rm -rf /root/.cache
-rm -rf /etc/environment
-rm -rf /etc/apt/sources.list.d/openresty.list
-
-# Install dependencies
-log "Installing dependencies"
-rm -rf /etc/environment
-runcmd apt-get update
-export DEBIAN_FRONTEND=noninteractive
-runcmd 'apt-get install -y --no-install-recommends $DEVDEPS gnupg openssl ca-certificates apache2-utils logrotate'
-
-# Install Python
-log "Installing python"
-runcmd apt-get install -y -q --no-install-recommends python3 python3-distutils python3-venv
-python3 -m venv /opt/certbot/
-export PATH=/opt/certbot/bin:$PATH
-grep -qo "/opt/certbot" /etc/environment || echo "$PATH" > /etc/environment
-# Install certbot and python dependancies
-runcmd wget -qO - https://bootstrap.pypa.io/get-pip.py | python -
-if [ "$(getconf LONG_BIT)" = "32" ]; then
-  runcmd pip install --no-cache-dir -U cryptography==3.3.2
-fi
-runcmd pip install --no-cache-dir cffi certbot
-
-# Install openresty
-log "Installing openresty"
-#wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
-#_distro_release=$(wget $WGETOPT "http://openresty.org/package/$DISTRO_ID/dists/" -O - | grep -o "$DISTRO_CODENAME" | head -n1 || true)
-#if [ $DISTRO_ID = "ubuntu" ]; then
-#  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-focal} main" | tee /etc/apt/sources.list.d/openresty.list
-#else
-#  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-bullseye} openresty" | tee /etc/apt/sources.list.d/openresty.list
-#fi
-runcmd sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
-wget -O - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
-echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" \
-    | sudo tee /etc/apt/sources.list.d/openresty.list
-runcmd apt-get -y update
-runcmd sudo apt-get -y install --no-install-recommends openresty
-
-# Install nodejs
-log "Installing nodejs"
-runcmd wget -qO - https://deb.nodesource.com/setup_16.x | bash -
-runcmd apt-get install -y -q --no-install-recommends nodejs
-runcmd npm install --global yarn
-
 # Get latest version information for PegaFlare
 log "Checking for latest PegaFlare release"
 runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
@@ -119,14 +66,6 @@ _latest_version=$(basename $(cat ./_latest_release | grep -wo "xxpandora/.*.tar.
 log "Downloading PegaFlare v$_latest_version"
 runcmd 'wget $WGETOPT -c $NPMURL/archive/v$_latest_version.tar.gz -O - | tar -xz'
 cd ./nginx-proxy-manager-$_latest_version
-
-# Crate required symbolic links
-log "Setting up symbolic links"
-ln -sf /usr/bin/python3 /usr/bin/python
-ln -sf /opt/certbot/bin/pip /usr/bin/pip
-ln -sf /opt/certbot/bin/certbot /usr/bin/certbot
-ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/sbin/nginx
-ln -sf /usr/local/openresty/nginx/ /etc/nginx
 
 # Update PegaFlare version in package.json files
 sed -i "s+0.0.0+$_latest_version+g" backend/package.json
@@ -151,9 +90,7 @@ rm -f /etc/nginx/conf.d/dev.conf
 
 # Create required folders
 log "Create required folders"
-mkdir -p /tmp/nginx/body \
-/run/nginx \
-/data/nginx \
+mkdir -p /data/nginx \
 /data/custom_ssl \
 /data/logs \
 /data/access \
@@ -163,23 +100,10 @@ mkdir -p /tmp/nginx/body \
 /data/nginx/redirection_host \
 /data/nginx/stream \
 /data/nginx/dead_host \
-/data/nginx/temp \
-/var/lib/nginx/cache/public \
-/var/lib/nginx/cache/private \
-/var/cache/nginx/proxy_temp
+/data/nginx/temp
 
 chmod -R 777 /var/cache/nginx
 chown root /tmp/nginx
-
-# Dynamically generate resolvers file, if resolver is IPv6, enclose in `[]`
-# thanks @tfmm
-echo resolver "$(awk 'BEGIN{ORS=" "} $1=="nameserver" {print ($2 ~ ":")? "["$2"]": $2}' /etc/resolv.conf);" > /etc/nginx/conf.d/include/resolvers.conf
-
-# Generate dummy self-signed certificate.
-if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
-  log "Generating dummy SSL certificate"
-  runcmd 'openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem'
-fi
 
 # Copy app files
 log "Copy app files"

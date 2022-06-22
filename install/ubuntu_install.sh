@@ -44,33 +44,8 @@ trapexit() {
   fi
 }
 
-# Check for previous install
-if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
-  log "Stopping services"
-  systemctl stop openresty
-  systemctl stop pegaflare-waf
- 
-  # Cleanup for new install
-  log "Cleaning old files"
-  runcmd apt-get remove -y openresty
-  rm -rf /app \
-  /var/www/html \
-  /var/log/nginx \
-  /var/lib/nginx \
-  /var/cache/nginx \
-  /etc/environment \
-  /etc/apt/sources.list.d/openresty.list \ &>/dev/null
-fi
- 
-# Cleanup environment
-log "Cleanup environment"
-rm -rf /root/.cache
-rm -rf /etc/environment
-rm -rf /etc/apt/sources.list.d/openresty.list
-
 # Install dependencies
 log "Installing dependencies"
-rm -rf /etc/environment
 runcmd apt-get update
 export DEBIAN_FRONTEND=noninteractive
 runcmd 'apt-get install -y --no-install-recommends $DEVDEPS gnupg openssl ca-certificates apache2-utils logrotate'
@@ -102,7 +77,7 @@ wget -O - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
 echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" \
     | sudo tee /etc/apt/sources.list.d/openresty.list
 runcmd apt-get -y update
-runcmd sudo apt-get -y install --no-install-recommends openresty
+runcmd apt-get -y install --no-install-recommends openresty
 
 # Install nodejs
 log "Installing nodejs"
