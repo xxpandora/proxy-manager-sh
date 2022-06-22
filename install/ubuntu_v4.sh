@@ -54,7 +54,6 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   log "Cleaning old files"
   runcmd apt-get remove -y openresty
   rm -rf /app \
-  /data \
   /var/www/html \
   /var/log/nginx \
   /var/lib/nginx \
