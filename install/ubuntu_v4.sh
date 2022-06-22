@@ -42,25 +42,26 @@ trapexit() {
   else
     printf "\e[33muncaught error occurred\n\e[0m"
   fi
-  
-  # Cleanup
+}
+
+# Check for previous install
+if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
+  log "Stopping services"
+  systemctl stop openresty
+  systemctl stop pegaflare-waf
+
+  log "Remove old packets" 
   apt-get remove --purge -y $DEVDEPS -qq &>/dev/null
   apt-get autoremove -y -qq &>/dev/null
   apt-get clean
   rm -rf $TEMPDIR
   rm -rf /root/.cache
   rm -rf /etc/environment
-}
-
-# Check for previous install
-if [ -f /lib/systemd/system/npm.service ]; then
-  log "Stopping services"
-  systemctl stop openresty
-  systemctl stop npm
-  
+ 
   # Cleanup for new install
   log "Cleaning old files"
   rm -rf /app \
+  /data \
   /var/www/html \
   /etc/nginx \
   /var/log/nginx \
@@ -115,8 +116,8 @@ log "Downloading PegaFlare v$_latest_version"
 runcmd 'wget $WGETOPT -c $NPMURL/archive/v$_latest_version.tar.gz -O - | tar -xz'
 cd ./nginx-proxy-manager-$_latest_version
 
-log "Setting up enviroment"
 # Crate required symbolic links
+log "Setting up enviroment"
 ln -sf /usr/bin/python3 /usr/bin/python
 ln -sf /opt/certbot/bin/pip /usr/bin/pip
 ln -sf /opt/certbot/bin/certbot /usr/bin/certbot
