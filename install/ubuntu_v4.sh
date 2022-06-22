@@ -49,7 +49,6 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   log "Stopping services and remove"
   systemctl stop openresty
   systemctl stop pegaflare-waf
-  runcmd apt remove -y openresty
  
   # Cleanup for new install
   log "Cleaning old files"
