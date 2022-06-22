@@ -49,13 +49,6 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   log "Stopping services"
   systemctl stop openresty
   systemctl stop pegaflare-waf
-
-  log "Remove old packets" 
-  apt-get autoremove -y -qq &>/dev/null
-  apt-get clean
-  rm -rf $TEMPDIR
-  rm -rf /root/.cache
-  rm -rf /etc/environment
  
   # Cleanup for new install
   log "Cleaning old files"
@@ -66,6 +59,7 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   /var/log/nginx \
   /var/lib/nginx \
   /var/cache/nginx \
+  /etc/environment \
   /usr/local/openresty \ &>/dev/null
 fi
 
