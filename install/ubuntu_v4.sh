@@ -51,7 +51,6 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   systemctl stop pegaflare-waf
 
   log "Remove old packets" 
-  apt-get remove --purge -y $DEVDEPS -qq &>/dev/null
   apt-get autoremove -y -qq &>/dev/null
   apt-get clean
   rm -rf $TEMPDIR
