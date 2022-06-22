@@ -60,13 +60,16 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   /var/lib/nginx \
   /var/cache/nginx \
   /etc/environment \
-  /usr/local/openresty \ &>/dev/null
+  /usr/local/openresty \
+  /etc/apt/sources.list.d/openresty.list \ &>/dev/null
 fi
  
 # Cleanup environment
 log "Cleanup environment"
 rm -rf /root/.cache
 rm -rf /etc/environment
+rm -rf /etc/apt/sources.list.d/openresty.list \ &>/dev/null
+
 
 # Install dependencies
 log "Installing dependencies"
