@@ -16,3 +16,9 @@ wget --no-cache -qO - https://raw.githubusercontent.com/xxpandora/proxy-manager-
 ```bash
 wget --no-cache -qO - https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/setup_v4.sh | sh
 ```
+
+## Alternative v5 Usage
+
+```bash
+wget --no-cache -qO - https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/setup_v5.sh | sh
+```
