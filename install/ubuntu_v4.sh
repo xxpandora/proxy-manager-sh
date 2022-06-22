@@ -110,7 +110,7 @@ runcmd 'wget $WGETOPT -c $NPMURL/archive/v$_latest_version.tar.gz -O - | tar -xz
 cd ./nginx-proxy-manager-$_latest_version
 
 # Crate required symbolic links
-log "Setting up enviroment"
+log "Setting up symbolic links"
 ln -sf /usr/bin/python3 /usr/bin/python
 ln -sf /opt/certbot/bin/pip /usr/bin/pip
 ln -sf /opt/certbot/bin/certbot /usr/bin/certbot
