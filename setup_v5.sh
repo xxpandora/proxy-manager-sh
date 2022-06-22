@@ -15,6 +15,33 @@ INSTALL_SCRIPT=ubuntu_install
 UPDATE_SCRIPT=ubuntu_update
 DELETE_SCRIPT=ubuntu_delete
 
+# Define installation parameters for headless install (fallback if unspecifed)
+if [[ $HEADLESS == "y" ]]; then
+	OPTION=${OPTION:-1}
+	NGINX_VER=${NGINX_VER:-1}
+	OPENRESTY_VER=${OPENRESTY_VER:-1}
+	PAGESPEED=${PAGESPEED:-n}
+	BROTLI=${BROTLI:-n}
+	HEADERMOD=${HEADERMOD:-n}
+	GEOIP=${GEOIP:-n}
+	FANCYINDEX=${FANCYINDEX:-n}
+	CACHEPURGE=${CACHEPURGE:-n}
+	SUBFILTER=${SUBFILTER:-n}
+	LUA=${LUA:-n}
+	WEBDAV=${WEBDAV:-n}
+	VTS=${VTS:-n}
+	RTMP=${RTMP:-n}
+	TESTCOOKIE=${TESTCOOKIE:-n}
+	HTTP3=${HTTP3:-n}
+	MODSEC=${MODSEC:-n}
+	HPACK=${HPACK:-n}
+	RTMP=${RTMP:-n}
+	SUBFILTER=${SUBFILTER:-n}
+	SSL=${SSL:-1}
+	RM_CONF=${RM_CONF:-y}
+	RM_LOGS=${RM_LOGS:-y}
+fi
+
 
 # Clean screen before launching menu
 if [[ $HEADLESS == "n" ]]; then
@@ -40,7 +67,6 @@ case $OPTION in
 1)
 
 	# Install
-	if [[ $INSTALL == 'y' ]]; then
 		rm -rf $TMP
 		wget -O "$TMP" "$INSTALL_URL/$INSTALL_SCRIPT.sh"
 
@@ -51,7 +77,6 @@ case $OPTION in
 		else
 			sh "$TMP"
 		fi
-	fi
 	echo ""
 	echo "Installation done."
 	sleep 2
@@ -59,11 +84,9 @@ case $OPTION in
 	exit
 	;;
 
-case $OPTION in
 2)
 
 	# Update
-	if [[ $UPDATE == 'y' ]]; then
 		rm -rf $TMP
 		wget -O "$TMP" "$UPDATE_URL/$UPDATE_URL.sh"
 
@@ -74,7 +97,6 @@ case $OPTION in
 		else
 			sh "$TMP"
 		fi
-	fi
 	echo ""
 	echo "Update done."
 	sleep 2
@@ -82,11 +104,9 @@ case $OPTION in
 	exit
 	;;
 
-case $OPTION in
 3)
 
 	# Delete
-	if [[ $DELETE == 'y' ]]; then
 		rm -rf $TMP
 		wget -O "$TMP" "$DELETE_URL/$DELETE_URL.sh"
 
@@ -97,7 +117,6 @@ case $OPTION in
 		else
 			sh "$TMP"
 		fi
-	fi
 	echo ""
 	echo "Delete done."
 	sleep 2
