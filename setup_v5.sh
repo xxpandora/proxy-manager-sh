@@ -18,28 +18,6 @@ DELETE_SCRIPT=ubuntu_delete
 # Define installation parameters for headless install (fallback if unspecifed)
 if [[ $HEADLESS == "y" ]]; then
 	OPTION=${OPTION:-1}
-	NGINX_VER=${NGINX_VER:-1}
-	OPENRESTY_VER=${OPENRESTY_VER:-1}
-	PAGESPEED=${PAGESPEED:-n}
-	BROTLI=${BROTLI:-n}
-	HEADERMOD=${HEADERMOD:-n}
-	GEOIP=${GEOIP:-n}
-	FANCYINDEX=${FANCYINDEX:-n}
-	CACHEPURGE=${CACHEPURGE:-n}
-	SUBFILTER=${SUBFILTER:-n}
-	LUA=${LUA:-n}
-	WEBDAV=${WEBDAV:-n}
-	VTS=${VTS:-n}
-	RTMP=${RTMP:-n}
-	TESTCOOKIE=${TESTCOOKIE:-n}
-	HTTP3=${HTTP3:-n}
-	MODSEC=${MODSEC:-n}
-	HPACK=${HPACK:-n}
-	RTMP=${RTMP:-n}
-	SUBFILTER=${SUBFILTER:-n}
-	SSL=${SSL:-1}
-	RM_CONF=${RM_CONF:-y}
-	RM_LOGS=${RM_LOGS:-y}
 fi
 
 
