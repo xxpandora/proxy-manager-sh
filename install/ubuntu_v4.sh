@@ -52,6 +52,7 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
  
   # Cleanup for new install
   log "Cleaning old files"
+  runcmd apt-get remove -y openresty
   rm -rf /app \
   /data \
   /var/www/html \
@@ -68,8 +69,6 @@ fi
 log "Cleanup environment"
 rm -rf /root/.cache
 rm -rf /etc/environment
-rm -rf /etc/apt/sources.list.d/openresty.list \ &>/dev/null
-
 
 # Install dependencies
 log "Installing dependencies"
