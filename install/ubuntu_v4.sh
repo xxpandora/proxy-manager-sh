@@ -56,12 +56,10 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   rm -rf /app \
   /data \
   /var/www/html \
-  /etc/nginx \
   /var/log/nginx \
   /var/lib/nginx \
   /var/cache/nginx \
   /etc/environment \
-  /usr/local/openresty \
   /etc/apt/sources.list.d/openresty.list \ &>/dev/null
 fi
  
