@@ -50,14 +50,10 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   systemctl stop openresty
   systemctl stop pegaflare-waf
 
-  # Cleanup services
-  log "Cleanup services"
+  # Cleanup environment
+  log "Cleanup environment"
   rm -rf /root/.cache
   rm -rf /etc/environment
-  apt-get remove --purge -y openresty -qq &>/dev/null
-  apt-get remove --purge -y $DEVDEPS -qq &>/dev/null
-  apt-get autoremove -y -qq &>/dev/null
-  apt-get clean
  
   # Cleanup for new install
   log "Cleaning old files"
@@ -74,6 +70,7 @@ fi
 
 # Install dependencies
 log "Installing dependencies"
+rm -rf /etc/environment
 runcmd apt-get update
 export DEBIAN_FRONTEND=noninteractive
 runcmd 'apt-get install -y --no-install-recommends $DEVDEPS gnupg openssl ca-certificates apache2-utils logrotate'
