@@ -52,12 +52,12 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
 
   # Cleanup services
   log "Cleanup services"
-  apt-get remove --purge -y openresty
+  rm -rf /root/.cache
+  rm -rf /etc/environment
+  apt-get remove --purge -y openresty -qq &>/dev/null
   apt-get remove --purge -y $DEVDEPS -qq &>/dev/null
   apt-get autoremove -y -qq &>/dev/null
   apt-get clean
-  rm -rf /root/.cache
-  rm -rf /etc/environment
  
   # Cleanup for new install
   log "Cleaning old files"
