@@ -170,6 +170,7 @@ systemctl enable pegaflare-waf
 
 # Generate dummy self-signed certificate.
 log "Generating dummy SSL certificate"
+rm -rf /data/nginx/dummycert.pem
 runcmd openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem
 
 # Start services
