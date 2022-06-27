@@ -212,8 +212,7 @@ systemctl enable pegaflare-waf
 
 # Start services
 log "Starting services"
-runcmd systemctl reload openresty
-runcmd systemctl restart openresty
+runcmd systemctl start openresty
 runcmd systemctl start pegaflare-waf
 
 IP=$(hostname -I | cut -f1 -d ' ')

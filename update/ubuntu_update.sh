@@ -49,11 +49,12 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   log "Stopping services"
   systemctl stop openresty
   systemctl stop pegaflare-waf
+  systemctl disable pegaflare-waf
  
   # Cleanup for new install
   log "Cleaning old files"
   rm -rf /app \
-  /data/database.sqlite \
+  /data \
   /lib/systemd/system/pegaflare-waf.service \ &>/dev/null
 fi
  
@@ -169,7 +170,7 @@ systemctl enable pegaflare-waf
 
 # Start services
 log "Starting services"
-runcmd systemctl restart openresty
+runcmd systemctl start openresty
 runcmd systemctl start pegaflare-waf
 
 IP=$(hostname -I | cut -f1 -d ' ')
