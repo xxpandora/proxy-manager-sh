@@ -145,12 +145,6 @@ chown root /tmp/nginx
 # thanks @tfmm
 echo resolver "$(awk 'BEGIN{ORS=" "} $1=="nameserver" {print ($2 ~ ":")? "["$2"]": $2}' /etc/resolv.conf);" > /etc/nginx/conf.d/include/resolvers.conf
 
-# Generate dummy self-signed certificate.
-if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
-  log "Generating dummy SSL certificate"
-  runcmd 'openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem'
-fi
-
 # Copy app files
 log "Copy app files"
 mkdir -p /app/global /app/frontend/images
@@ -209,6 +203,12 @@ WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl enable pegaflare-waf
+
+# Generate dummy self-signed certificate.
+if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
+  log "Generating dummy SSL certificate"
+  runcmd 'openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem'
+fi
 
 # Start services
 log "Starting services"
