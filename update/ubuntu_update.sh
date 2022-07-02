@@ -54,7 +54,7 @@ fi
 
 # Cleanup for new install
 log "Cleaning old files"
-runcmd rm -rf /app
+rm -rf /app
 runcmd rm -rf /data
 runcmd rm -rf /etc/letsencrypt.ini
 runcmd rm -rf /etc/environment
