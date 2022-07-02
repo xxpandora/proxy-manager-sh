@@ -52,6 +52,13 @@ if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
   systemctl stop pegaflare-waf
 fi
 
+# Cleanup for new install
+log "Cleaning old files"
+runcmd rm -rf /app
+runcmd rm -rf /data
+runcmd rm -rf /etc/letsencrypt.ini
+runcmd rm -rf /etc/environment
+
 # Install nodejs
 log "Installing nodejs"
 runcmd wget -qO - https://deb.nodesource.com/setup_16.x | bash -
