@@ -54,9 +54,10 @@ fi
 
 # Cleanup for new install
 log "Cleaning old files"
-rm -rf /app \
-  /data \ 
-  /etc/letsencrypt.ini &>/dev/null
+rm -rf /app
+rm -rf /data
+rm -rf /etc/letsencrypt.ini
+rm -rf /etc/environment
 
 # Install nodejs
 log "Installing nodejs"
