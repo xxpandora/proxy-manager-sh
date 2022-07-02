@@ -54,7 +54,7 @@ fi
 
 # Cleanup for new install
 log "Cleaning old files"
-rm -rf /app
+runcmd rm -rf /app
 runcmd rm -rf /data
 runcmd rm -rf /etc/letsencrypt.ini
 runcmd rm -rf /etc/environment
@@ -109,9 +109,10 @@ mkdir -p /data/nginx \
 /data/nginx/temp
 
 # Generate dummy self-signed certificate.
-log "Generating dummy SSL certificate"
-rm -rf /data/nginx/dummycert.pem
-runcmd openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem
+if [ ! -f /data/nginx/dummycert.pem ] || [ ! -f /data/nginx/dummykey.pem ]; then
+  log "Generating dummy SSL certificate"
+  runcmd 'openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem'
+fi
 
 # Copy app files
 log "Copy app files"
