@@ -45,19 +45,25 @@ trapexit() {
 }
 
 # Check for previous install
+log "Stopping services"
+systemctl stop openresty
+
 if [ -f /lib/systemd/system/pegaflare-waf.service ]; then
-  log "Stopping services"
-  systemctl stop openresty
   systemctl stop pegaflare-waf
-  systemctl disable pegaflare-waf
- 
-  # Cleanup for new install
-  log "Cleaning old files"
-  rm -rf /app \
-  /data \
-  /lib/systemd/system/pegaflare-waf.service \ &>/dev/null
 fi
- 
+
+# Cleanup for new install
+log "Cleaning old files"
+rm -rf /app \
+  /data \ 
+  /etc/letsencrypt.ini &>/dev/null
+
+# Install nodejs
+log "Installing nodejs"
+runcmd wget -qO - https://deb.nodesource.com/setup_16.x | bash -
+runcmd apt-get install -y -q --no-install-recommends nodejs
+runcmd npm install --global yarn
+
 # Get latest version information for PegaFlare
 log "Checking for latest PegaFlare release"
 runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
@@ -81,19 +87,14 @@ done
 
 # Copy runtime files
 log "Copy runtime files"
-mkdir -p /var/www/html /etc/nginx/logs
 cp -r docker/rootfs/var/www/html/* /var/www/html/
 cp -r docker/rootfs/etc/nginx/* /etc/nginx/
 cp docker/rootfs/etc/letsencrypt.ini /etc/letsencrypt.ini
-cp docker/rootfs/etc/logrotate.d/pegaflare-waf-manager /etc/logrotate.d/pegaflare-waf-manager
 ln -sf /etc/nginx/nginx.conf /etc/nginx/conf/nginx.conf
 rm -f /etc/nginx/conf.d/dev.conf
 
 # Create required folders
 log "Create required folders"
-if [ -f /tmp/pandora ]; then
-  mkdir /tmp/nginx 
-fi
 mkdir -p /data/nginx \
 /data/custom_ssl \
 /data/logs \
@@ -106,8 +107,10 @@ mkdir -p /data/nginx \
 /data/nginx/dead_host \
 /data/nginx/temp
 
-chmod -R 777 /var/cache/nginx
-chown root /tmp/nginx
+# Generate dummy self-signed certificate.
+log "Generating dummy SSL certificate"
+rm -rf /data/nginx/dummycert.pem
+runcmd openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem
 
 # Copy app files
 log "Copy app files"
@@ -146,37 +149,11 @@ cd /app
 export NODE_ENV=development
 runcmd yarn install --network-timeout=30000
 
-# Create PegaFlare service
-log "Creating PegaFlare service"
-cat << 'EOF' > /lib/systemd/system/pegaflare-waf.service
-[Unit]
-Description=PegaFlare WAF
-After=network.target
-Wants=openresty.service
-
-[Service]
-Type=simple
-Environment=NODE_ENV=production
-ExecStartPre=-/bin/mkdir -p /tmp/nginx/body /data/letsencrypt-acme-challenge
-ExecStart=/usr/bin/node index.js --abort_on_uncaught_exception --max_old_space_size=250
-WorkingDirectory=/app
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl enable pegaflare-waf
-
-# Generate dummy self-signed certificate.
-log "Generating dummy SSL certificate"
-rm -rf /data/nginx/dummycert.pem
-runcmd openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -subj "/O=PegaFlare WAF/OU=Dummy Certificate/CN=pegaflare.local" -keyout /data/nginx/dummykey.pem -out /data/nginx/dummycert.pem
-
 # Start services
 log "Starting services"
-runcmd systemctl start openresty
-runcmd systemctl start pegaflare-waf
+systemctl daemon-reload
+systemctl start openresty
+systemctl start pegaflare-waf
 
 IP=$(hostname -I | cut -f1 -d ' ')
 log "Installation complete
