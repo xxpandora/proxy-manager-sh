@@ -58,7 +58,7 @@ case $OPTION in
 	echo ""
 	echo "Installation done."
 	sleep 2
-	./setup_v5.sh
+	./setup_v6.sh
 	exit
 	;;
 
@@ -78,7 +78,7 @@ case $OPTION in
 	echo ""
 	echo "Update done."
 	sleep 2
-	./setup_v5.sh
+	./setup_v6.sh
 	exit
 	;;
 
@@ -98,7 +98,7 @@ case $OPTION in
 	echo ""
 	echo "Delete done."
 	sleep 2
-	./setup_v5.sh
+	./setup_v6.sh
 	exit
 	;;
 
