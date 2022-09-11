@@ -90,8 +90,6 @@ log "Setting up symbolic links"
 ln -sf /usr/bin/python3 /usr/bin/python
 ln -sf /opt/certbot/bin/pip /usr/bin/pip
 ln -sf /opt/certbot/bin/certbot /usr/bin/certbot
-ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/sbin/nginx
-ln -sf /usr/local/openresty/nginx/ /etc/nginx
 
 # Update PegaFlare version in package.json files
 sed -i "s+0.0.0+$_latest_version+g" backend/package.json
@@ -183,7 +181,7 @@ cat << 'EOF' > /lib/systemd/system/pegaflare-waf.service
 [Unit]
 Description=PegaFlare WAF
 After=network.target
-Wants=openresty.service
+Wants=nginx.service
 
 [Service]
 Type=simple
