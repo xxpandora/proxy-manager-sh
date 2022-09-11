@@ -65,8 +65,8 @@ runcmd pip install --no-cache-dir cffi certbot
 
 # Install pegaflare-waf server
 log "Installing pegaflare-waf server"
-wget -qO - https://github.com/xxpandora/proxy-manager-sh/raw/main/nginx_source/nginx_1.22.0-1_amd64.deb
-wget -qO - https://github.com/xxpandora/proxy-manager-sh/raw/main/nginx_source/nginx-dbg_1.22.0-1_amd64.deb
+wget https://github.com/xxpandora/proxy-manager-sh/raw/main/nginx_source/nginx_1.22.0-1_amd64.deb
+wget https://github.com/xxpandora/proxy-manager-sh/raw/main/nginx_source/nginx-dbg_1.22.0-1_amd64.deb
 dpkg -i *.deb
 
 # Install nodejs
