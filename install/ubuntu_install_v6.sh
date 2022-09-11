@@ -109,7 +109,6 @@ cp -r docker/rootfs/var/www/html/* /var/www/html/
 cp -r docker/rootfs/etc/nginx/* /etc/nginx/
 cp docker/rootfs/etc/letsencrypt.ini /etc/letsencrypt.ini
 cp docker/rootfs/etc/logrotate.d/pegaflare-waf-manager /etc/logrotate.d/pegaflare-waf-manager
-ln -sf /etc/nginx/nginx.conf /etc/nginx/conf/nginx.conf
 rm -f /etc/nginx/conf.d/dev.conf
 
 # Create required folders
