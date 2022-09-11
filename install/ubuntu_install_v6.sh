@@ -207,7 +207,7 @@ fi
 
 # Start services
 log "Starting services"
-runcmd systemctl start openresty
+runcmd systemctl start nginx
 runcmd systemctl start pegaflare-waf
 
 IP=$(hostname -I | cut -f1 -d ' ')
