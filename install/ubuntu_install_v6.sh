@@ -65,25 +65,9 @@ runcmd pip install --no-cache-dir cffi certbot
 
 # Install pegaflare-waf server
 log "Installing pegaflare-waf server"
-wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
-_distro_release=$(wget $WGETOPT "http://openresty.org/package/$DISTRO_ID/dists/" -O - | grep -o "$DISTRO_CODENAME" | head -n1 || true)
-if [ $DISTRO_ID = "ubuntu" ]; then
-  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-focal} main" | tee /etc/apt/sources.list.d/openresty.list
-else
-  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-bullseye} openresty" | tee /etc/apt/sources.list.d/openresty.list
-fi
-runcmd apt-get update && apt-get install -y -q --no-install-recommends openresty
-
-# Install openresty
-log "Installing openresty"
-wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
-_distro_release=$(wget $WGETOPT "http://openresty.org/package/$DISTRO_ID/dists/" -O - | grep -o "$DISTRO_CODENAME" | head -n1 || true)
-if [ $DISTRO_ID = "ubuntu" ]; then
-  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-focal} main" | tee /etc/apt/sources.list.d/openresty.list
-else
-  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-bullseye} openresty" | tee /etc/apt/sources.list.d/openresty.list
-fi
-runcmd apt-get update && apt-get install -y -q --no-install-recommends openresty
+wget -qO - https://github.com/xxpandora/proxy-manager-sh/raw/main/nginx_source/nginx_1.22.0-1_amd64.deb
+wget -qO - https://github.com/xxpandora/proxy-manager-sh/raw/main/nginx_source/nginx-dbg_1.22.0-1_amd64.deb
+dpkg -i *.deb
 
 # Install nodejs
 log "Installing nodejs"
