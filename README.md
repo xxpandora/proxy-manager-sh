@@ -24,3 +24,11 @@ wget https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/setup_v5.
 chmod +x setup_v5.sh
 bash setup_v5.sh
 ```
+
+## Alternative v6 Usage
+
+```bash
+wget https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/setup_v6.sh
+chmod +x setup_v6.sh
+bash setup_v6.sh
+```
