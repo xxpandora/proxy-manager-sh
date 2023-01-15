@@ -83,7 +83,7 @@ runcmd apt-get install -y -q --no-install-recommends nodejs
 runcmd npm install --global yarn
 
 # Get latest version information for PegaFlare
-log "Checking for latest NPM release"
+log "Checking for latest PegaFlare release"
 runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
 _latest_version=$(cat ./_latest_release | grep -Po '(?<=expanded_assets/v)[^"]+')
 
