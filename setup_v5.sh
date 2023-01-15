@@ -46,7 +46,7 @@ case $OPTION in
 
 	# Install
 		rm -rf $TMP
-		wget --no-check-certificate --no-cache --no-cookies "$TMP" "$INSTALL_URL/$INSTALL_SCRIPT.sh"
+		wget --no-check-certificate --no-cache --no-cookies -O "$TMP" "$INSTALL_URL/$INSTALL_SCRIPT.sh"
 
 		chmod +x "$TMP"
 
@@ -66,7 +66,7 @@ case $OPTION in
 
 	# Update
 		rm -rf $TMP
-		wget --no-check-certificate --no-cache --no-cookies "$TMP" "$UPDATE_URL/$UPDATE_SCRIPT.sh"
+		wget --no-check-certificate --no-cache --no-cookies -O "$TMP" "$UPDATE_URL/$UPDATE_SCRIPT.sh"
 
 		chmod +x "$TMP"
 
@@ -86,7 +86,7 @@ case $OPTION in
 
 	# Delete
 		rm -rf $TMP
-		wget --no-check-certificate --no-cache --no-cookies "$TMP" "$DELETE_URL/$DELETE_SCRIPT.sh"
+		wget --no-check-certificate --no-cache --no-cookies -O "$TMP" "$DELETE_URL/$DELETE_SCRIPT.sh"
 
 		chmod +x "$TMP"
 
