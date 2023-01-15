@@ -68,7 +68,7 @@ runcmd npm install --global yarn
 # Get latest version information for PegaFlare
 log "Checking for latest PegaFlare release"
 runcmd 'wget $WGETOPT -O ./_latest_release $NPMURL/releases/latest'
-_latest_version=$(basename $(cat ./_latest_release | grep -wo "xxpandora/.*.tar.gz") .tar.gz | cut -d'v' -f2)
+_latest_version=$(cat ./_latest_release | grep -Po '(?<=expanded_assets/v)[^"]+')
 
 # Download PegaFlare WAF source
 log "Downloading PegaFlare v$_latest_version"
