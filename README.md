@@ -20,7 +20,7 @@ wget --no-cache -qO - https://raw.githubusercontent.com/xxpandora/proxy-manager-
 ## Alternative v5 Usage
 
 ```bash
-wget https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/setup_v5.sh
+wget --no-check-certificate --no-cache --no-cookies https://raw.githubusercontent.com/xxpandora/proxy-manager-sh/main/setup_v5.sh
 chmod +x setup_v5.sh
 bash setup_v5.sh
 ```
