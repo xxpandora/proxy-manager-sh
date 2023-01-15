@@ -67,7 +67,12 @@ runcmd pip install --no-cache-dir cffi certbot
 log "Installing openresty"
 runcmd wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
 runcmd apt-get -y install software-properties-common
-runcmd add-apt-repository -y "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main"
+_distro_release=$(wget $WGETOPT "http://openresty.org/package/$DISTRO_ID/dists/" -O - | grep -o "$DISTRO_CODENAME" | head -n1 || true)
+if [ $DISTRO_ID = "ubuntu" ]; then
+  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-focal} main" | tee /etc/apt/sources.list.d/openresty.list
+else
+  echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-bullseye} openresty" | tee /etc/apt/sources.list.d/openresty.list
+fi
 runcmd apt-get update -y
 rumcmd sudo apt-get install openresty
 
