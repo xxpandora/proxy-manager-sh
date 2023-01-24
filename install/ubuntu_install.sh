@@ -74,7 +74,7 @@ else
   echo "deb [trusted=yes] http://openresty.org/package/$DISTRO_ID ${_distro_release:-bullseye} openresty" | tee /etc/apt/sources.list.d/openresty.list
 fi
 apt-get update -y
-apt-get install openresty
+apt-get install -y openresty
 
 # Install nodejs
 log "Installing nodejs"
